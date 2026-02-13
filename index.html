@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Be My Valentine? 💘</title>
+
+<style>
+:root{
+  --card: rgba(255,255,255,.92);
+  --text:#2b213a;
+  --yes:#8ee3cf;
+  --no:#ff9bb8;
+  --overlay: rgba(20,10,40,.55);
+  --shadow: 0 25px 60px rgba(0,0,0,.2);
+}
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:
+    radial-gradient(900px 600px at 20% 10%, #ffe4f2, transparent 60%),
+    radial-gradient(900px 600px at 80% 20%, #d8f6ff, transparent 60%),
+    radial-gradient(900px 700px at 50% 90%, #f3e8ff, transparent 60%),
+    linear-gradient(135deg, #ffd6ec, #e0f7ff);
+  transition: background 700ms ease;
+}
+body.fireworksMode{
+  background:
+    radial-gradient(900px 600px at 20% 10%, rgba(255,200,230,.12), transparent 60%),
+    radial-gradient(900px 600px at 80% 20%, rgba(200,245,255,.10), transparent 60%),
+    radial-gradient(900px 700px at 50% 90%, rgba(230,210,255,.10), transparent 60%),
+    linear-gradient(135deg, #0b0820, #120a2b 60%, #080614);
+}
+
+/* Fireworks canvas */
+#fwCanvas{
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+body.fireworksMode #fwCanvas{ opacity: 1; }
+
+/* 🌷 moving tulips (page bg) */
+.flowers{ position:fixed; inset:0; overflow:hidden; z-index:0; pointer-events:none; }
+.flower{
+  position:absolute; bottom:-100px;
+  animation: floatTulip linear infinite;
+  will-change: transform;
+  filter: drop-shadow(0 8px 14px rgba(0,0,0,.15));
+}
+@keyframes floatTulip{
+  0%{ transform: translateY(0) rotate(0deg); opacity:0; }
+  10%{ opacity:.9; }
+  50%{ transform: translateY(-50vh) rotate(15deg); }
+  100%{ transform: translateY(-120vh) rotate(-20deg); opacity:0; }
+}
+
+/* CARD */
+.card{
+  position:relative; z-index:2;
+  width:min(720px,100%);
+  background:var(--card);
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  text-align:center;
+  padding:26px;
+}
+h1{
+  margin:0 0 18px;
+  font-size:clamp(24px,4.5vw,40px);
+  color:var(--text);
+}
+
+/* Buttons */
+.btnRow{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+.btn{
+  border:none; padding:14px 24px; border-radius:999px;
+  font-weight:900; font-size:16px; cursor:pointer;
+  min-width:160px; transition:.2s;
+}
+.btn:hover{ transform:scale(1.05); }
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.15); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.15); }
+  70% { transform: scale(1); }
+}
+#yesBtn{ background:var(--yes); animation: heartbeat 1.4s infinite; }
+#noBtn{ background:var(--no); }
+.footer{ margin-top:14px; font-size:13px; opacity:.75; color: rgba(43,33,58,.75); }
+
+/* Modals */
+.modal{
+  position:fixed; inset:0; display:none; place-items:center;
+  background:var(--overlay); padding:18px; z-index:10;
+}
+.modal.show{ display:grid; }
+.modalBox{
+  background:white; border-radius:20px;
+  padding:18px 18px 16px;
+  width:min(760px,100%);
+  box-shadow:var(--shadow);
+  position: relative;
+  overflow:hidden;
+}
+.closeBtn{
+  position:absolute; right:12px; top:10px;
+  cursor:pointer; font-weight:900; font-size:18px; user-select:none;
+}
+.yesHead{ margin: 0 0 8px; font-weight: 900; }
+.yesSub{ margin: 0 0 12px; opacity: .75; font-size: 14px; }
+
+/* Tulip wallpaper behind envelope */
+.tulipWall{
+  position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    radial-gradient(900px 380px at 50% 0%, rgba(255,210,232,.38), transparent 60%),
+    radial-gradient(700px 420px at 50% 100%, rgba(255,200,230,.22), transparent 60%);
+}
+.tulipGrid{
+  position:absolute; inset:0;
+  display:grid;
+  grid-template-columns: repeat(14, 1fr);
+  grid-auto-rows: 34px;
+  gap: 10px;
+  padding: 18px;
+  opacity: .95;
+}
+.tulipCell{
+  display:flex; align-items:center; justify-content:center;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.10));
+  transform: rotate(var(--r));
+  font-size: var(--s);
+  opacity: var(--o);
+}
+
+/* Envelope area */
+.envelopeArea{
+  position: relative;
+  z-index: 2;
+  display:grid;
+  place-items:center;
+  padding: 10px 0 4px;
+}
+
+/* ✅ FULLY CLOSED envelope */
+.envelope{
+  width: min(520px, 92vw);
+  height: clamp(190px, 28vw, 240px);
+  border-radius: 18px;
+  position:relative;
+  cursor:pointer;
+  overflow:hidden;
+  box-shadow: 0 18px 50px rgba(0,0,0,.15);
+  background: #ffe8f2;
+}
+.envBack{
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, #ffeaf4, #ffd9ea);
+}
+
+/* IMPORTANT: completely hidden when closed */
+.envLetter{
+  position:absolute;
+  left: 12px; right: 12px;
+  bottom: 12px;
+  height: 78%;
+  z-index: 1;
+  transform: translateY(115%);  /* <-- hides it fully */
+  opacity: 0;                  /* <-- hides text fully */
+  transition: transform .65s ease, opacity .25s ease;
+}
+.letter{
+  height:100%;
+  background:white;
+  border-radius:12px;
+  padding:12px;
+  overflow:auto;
+  border: 1px solid rgba(0,0,0,.06);
+}
+
+/* front pocket covers whole lower area */
+.envFront{
+  position:absolute; inset:0;
+  z-index: 3;
+  background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0));
+}
+/* Raise the pocket peak so it covers more */
+.envFront::before{
+  content:"";
+  position:absolute; inset:0;
+  background: #ffe2ef;
+  clip-path: polygon(0 100%, 50% 48%, 100% 100%, 100% 100%, 0 100%);
+}
+.envFront::after{
+  content:"";
+  position:absolute; inset:0;
+  background: rgba(255,255,255,.18);
+  clip-path: polygon(0 0, 50% 48%, 0 100%);
+}
+
+/* top flap */
+.envFlap{
+  position:absolute;
+  left:0; right:0; top:0;
+  height:56%;
+  z-index: 4;
+  background:#ffb9d6;
+  transform-origin: top;
+  transform: rotateX(0deg);
+  transition: transform .65s ease;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* wax seal */
+.waxSeal{
+  position:absolute;
+  left:50%;
+  top:56%;
+  transform: translate(-50%, -50%);
+  width: 54px; height: 54px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, #ff97bf, #ff4f91 70%);
+  box-shadow: 0 14px 28px rgba(255, 79, 145, .35);
+  z-index: 5;
+  display:grid;
+  place-items:center;
+  color:#fff;
+  font-size: 22px;
+  border: 2px solid rgba(255,255,255,.5);
+  transition: .25s ease;
+}
+
+/* OPEN state (FIX: flap won't block the letter) */
+.envelope.open .envFlap{
+  transform: rotateX(165deg);
+  opacity: 0;     /* hide */
+  z-index: 0;     /* send behind */
+}
+
+.envelope.open .envLetter{
+  transform: translateY(0%);
+  opacity: 1;
+  z-index: 6;     /* make sure it's above pocket/flap */
+  transition: transform .65s ease, opacity .25s ease .15s;
+}
+
+.envelope.open .waxSeal{
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.85);
+}
+
+
+/* Confetti layer */
+.confettiLayer{
+  position:absolute; inset:0;
+  z-index: 6;
+  pointer-events:none;
+}
+.confetti{
+  position:absolute; top:-20px;
+  border-radius: 3px;
+  opacity:.95;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall{
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10%  { opacity: .95; }
+  100% { transform: translateY(520px) rotate(540deg); opacity: 0; }
+}
+
+@media (max-width:520px){
+  .tulipGrid{ grid-template-columns: repeat(10, 1fr); grid-auto-rows: 32px; }
+}
+@media (max-width:360px){
+  .tulipGrid{ grid-template-columns: repeat(8, 1fr); grid-auto-rows: 30px; }
+  .btn{ width:100%; max-width:320px; }
+}
+</style>
+</head>
+
+<body>
+<div class="flowers" id="flowers"></div>
+<canvas id="fwCanvas"></canvas>
+
+<div class="card">
+  <h1>Kirsten, Will you be my Valentine? 💘</h1>
+  <div class="btnRow">
+    <button class="btn" id="yesBtn">Yes 💖</button>
+    <button class="btn" id="noBtn">No 🥺</button>
+  </div>
+  <div class="footer" id="footerText">Choose wisely 😌</div>
+</div>
+
+<!-- NO MODAL -->
+<div class="modal" id="noModal">
+  <div class="modalBox">
+    <span class="closeBtn" onclick="closeNo()">✕</span>
+    <p id="noMessage"></p>
+  </div>
+</div>
+
+<!-- YES MODAL -->
+<div class="modal" id="yesModal">
+  <div class="modalBox">
+    <span class="closeBtn" onclick="closeYes()">✕</span>
+    <h3 class="yesHead">You said YES 💖</h3>
+    <p class="yesSub">Tap the envelope to open it 💌</p>
+
+    <div class="tulipWall">
+      <div class="tulipGrid" id="tulipGrid"></div>
+    </div>
+
+    <div class="confettiLayer" id="confettiLayer"></div>
+
+    <div class="envelopeArea">
+      <div class="envelope" id="envelope">
+        <div class="envBack"></div>
+
+        <div class="envLetter">
+          <div class="letter">
+            <h4 style="margin:0 0 8px;">My simple Letter 💌</h4>
+            <p style="margin:0;">Hi my baby, my love 💖
+
+I love you so much po. Thank you for accepting me into your life and for choosing me always.
+Thank you for your patience, your understanding, and for always making me feel special and loved. Thank you po for always giving me gifts kahit hindi po ako nag rerequest sayo
+
+With you, everything feels right and peaceful. Kahit simpleng moments lang natin, they mean the world to me.
+
+I promise to always take care of you, support you, and love you the best way that I can.
+I may not be perfect, but my love for you is real, sincere, and forever.
+
+Thank you for being my safe place, my happiness, and my greatest blessing.
+I’m so lucky to have you.
+
+Also, sorry po if hindi tayo makakapag-meet this February. Babawi po ako, baby ko.
+
+I love you always and forever, my Valentine 💘</p>
+          </div>
+        </div>
+
+        <div class="envFront"></div>
+        <div class="envFlap"></div>
+        <div class="waxSeal">❤</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* 🌷 page background tulips */
+const flowersContainer = document.getElementById("flowers");
+const bgTulips = ["🌷","🌷","🌷","🌷","🌷","🌷","🌸","🌷","🌺","🌷"];
+for(let i=0;i<55;i++) createBgTulip();
+setInterval(createBgTulip, 180);
+
+function createBgTulip(){
+  const f=document.createElement("div");
+  f.className="flower";
+  f.textContent=bgTulips[Math.floor(Math.random()*bgTulips.length)];
+  f.style.left=Math.random()*100+"vw";
+  const size=18+Math.random()*44;
+  f.style.fontSize=size+"px";
+  f.style.animationDuration=(7+Math.random()*7)+"s";
+  f.style.animationDelay=(Math.random()*1.8)+"s";
+  f.style.opacity=(0.55+Math.random()*0.45).toFixed(2);
+  if(size < 28) f.style.filter = "blur(1px) drop-shadow(0 6px 10px rgba(0,0,0,.12))";
+  flowersContainer.appendChild(f);
+  setTimeout(()=>f.remove(),16000);
+}
+
+/* NO LOGIC */
+let noClicks=0;
+const noBtn=document.getElementById("noBtn");
+const noModal=document.getElementById("noModal");
+const noMessage=document.getElementById("noMessage");
+const footerText=document.getElementById("footerText");
+
+noBtn.onclick=()=>{
+  noClicks++;
+  if(noClicks===1){
+    noMessage.textContent="why no baby? please try again baby 🥺";
+    noModal.classList.add("show");
+  } else if(noClicks===2){
+    noMessage.textContent="are you sure baby? kawawa naman ako 😭";
+    noModal.classList.add("show");
+  } else {
+    noBtn.remove();
+    footerText.textContent='Wala na pong "NO" 😌 only YES — you have no choice 💘';
+    noMessage.textContent='Wala na pong "NO" 😌 only YES — you have no choice 💘';
+    noModal.classList.add("show");
+  }
+};
+function closeNo(){ noModal.classList.remove("show"); }
+
+/* YES + tulip wall + confetti + fireworks */
+const yesBtn=document.getElementById("yesBtn");
+const yesModal=document.getElementById("yesModal");
+const envelope=document.getElementById("envelope");
+const tulipGrid=document.getElementById("tulipGrid");
+const confettiLayer=document.getElementById("confettiLayer");
+
+let tulipBuilt=false;
+
+yesBtn.onclick=()=>{
+  yesModal.classList.add("show");
+  envelope.classList.remove("open"); // ensure closed every time
+
+  if(!tulipBuilt){
+    buildTulipWallpaper();
+    tulipBuilt=true;
+  }
+  popConfetti();
+
+  document.body.classList.add("fireworksMode");
+  startFireworks();
+};
+
+function closeYes(){ yesModal.classList.remove("show"); }
+
+envelope.onclick=()=> envelope.classList.toggle("open");
+
+function buildTulipWallpaper(){
+  tulipGrid.innerHTML="";
+  const choices=["🤍🌷","🌷","🌷","🤍🌷","🌷","🤍🌷","🌷","🤍🌷"];
+  const total=220;
+  for(let i=0;i<total;i++){
+    const cell=document.createElement("div");
+    cell.className="tulipCell";
+    cell.textContent=choices[Math.floor(Math.random()*choices.length)];
+    cell.style.setProperty("--r", (Math.random()*24-12).toFixed(1)+"deg");
+    cell.style.setProperty("--s", (16+Math.random()*18).toFixed(0)+"px");
+    cell.style.setProperty("--o", (0.55+Math.random()*0.45).toFixed(2));
+    tulipGrid.appendChild(cell);
+  }
+}
+
+function popConfetti(){
+  confettiLayer.innerHTML="";
+  const pieces=80;
+  for(let i=0;i<pieces;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"%";
+    c.style.animationDuration=(1.6+Math.random()*1.2)+"s";
+    c.style.animationDelay=(Math.random()*0.08)+"s";
+    const hue=Math.floor(Math.random()*360);
+    c.style.background=`hsla(${hue}, 95%, 75%, 0.95)`;
+    const w=6+Math.random()*8, h=10+Math.random()*10;
+    c.style.width=w+"px"; c.style.height=h+"px";
+    confettiLayer.appendChild(c);
+    setTimeout(()=>c.remove(), 2600);
+  }
+}
+
+/* 🎆 Fireworks */
+const canvas=document.getElementById("fwCanvas");
+const ctx=canvas.getContext("2d");
+let fwRunning=false, rafId=null;
+
+function resizeCanvas(){
+  const dpr=Math.max(1, window.devicePixelRatio||1);
+  canvas.width=Math.floor(window.innerWidth*dpr);
+  canvas.height=Math.floor(window.innerHeight*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+const particles=[];
+function rand(min,max){ return Math.random()*(max-min)+min; }
+
+function burst(x,y){
+  const count=Math.floor(rand(40,70));
+  const hue=rand(0,360);
+  for(let i=0;i<count;i++){
+    const a=rand(0, Math.PI*2);
+    const sp=rand(1.2,4.2);
+    particles.push({
+      x,y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp,
+      life:rand(40,80), hue, size:rand(1.5,3.2)
+    });
+  }
+}
+
+function step(){
+  if(!fwRunning) return;
+  ctx.fillStyle="rgba(0,0,0,0.18)";
+  ctx.fillRect(0,0,window.innerWidth, window.innerHeight);
+
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.x+=p.vx; p.y+=p.vy;
+    p.vy+=0.03; p.vx*=0.99; p.vy*=0.99;
+    p.life-=1;
+    const alpha=Math.max(0, p.life/80);
+    ctx.beginPath();
+    ctx.fillStyle=`hsla(${p.hue}, 95%, 70%, ${alpha})`;
+    ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+    ctx.fill();
+    if(p.life<=0) particles.splice(i,1);
+  }
+
+  if(particles.length < 140 && Math.random() < 0.10){
+    burst(rand(60, window.innerWidth-60), rand(60, window.innerHeight*0.65));
+  }
+  rafId=requestAnimationFrame(step);
+}
+
+function startFireworks(){
+  if(fwRunning) return;
+  fwRunning=true;
+  for(let i=0;i<6;i++) burst(rand(80, window.innerWidth-80), rand(60, window.innerHeight*0.55));
+  cancelAnimationFrame(rafId);
+  rafId=requestAnimationFrame(step);
+}
+</script>
+</body>
+</html>
