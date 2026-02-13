@@ -31,13 +31,31 @@ body{
     linear-gradient(135deg, #ffd6ec, #e0f7ff);
   transition: background 700ms ease;
 }
+
 body.fireworksMode{
   background:
-    radial-gradient(900px 600px at 20% 10%, rgba(255,200,230,.12), transparent 60%),
-    radial-gradient(900px 600px at 80% 20%, rgba(200,245,255,.10), transparent 60%),
-    radial-gradient(900px 700px at 50% 90%, rgba(230,210,255,.10), transparent 60%),
-    linear-gradient(135deg, #0b0820, #120a2b 60%, #080614);
+    /* soft pink glow cloud */
+    radial-gradient(800px 500px at 20% 15%, rgba(255,120,200,.18), transparent 60%),
+
+    /* soft blue glow cloud */
+    radial-gradient(900px 600px at 80% 25%, rgba(120,200,255,.18), transparent 65%),
+
+    /* lavender cloud layer */
+    radial-gradient(1000px 700px at 50% 85%, rgba(200,160,255,.16), transparent 70%),
+
+    /* faint mist overlay */
+    radial-gradient(1200px 800px at 50% 50%, rgba(255,255,255,.05), transparent 75%),
+
+    /* base cloudy sky */
+    linear-gradient(180deg, #2a1f55 0%, #3a2a75 45%, #1f1444 100%);
 }
+
+body.fireworksMode .flower{
+  opacity: 0.8;
+  filter: drop-shadow(0 0 12px rgba(255,120,200,.6))
+          drop-shadow(0 0 18px rgba(120,200,255,.5));
+}
+
 
 /* Fireworks canvas */
 #fwCanvas{
@@ -53,7 +71,14 @@ body.fireworksMode{
 body.fireworksMode #fwCanvas{ opacity: 1; }
 
 /* 🌷 moving tulips (page bg) */
-.flowers{ position:fixed; inset:0; overflow:hidden; z-index:0; pointer-events:none; }
+.flowers{
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 2; /* was 0 */
+  pointer-events: none;
+}
+
 .flower{
   position:absolute; bottom:-100px;
   animation: floatTulip linear infinite;
@@ -81,6 +106,25 @@ h1{
   margin:0 0 18px;
   font-size:clamp(24px,4.5vw,40px);
   color:var(--text);
+  letter-spacing:.2px;
+}
+
+/* ✨ Glowy name */
+.glowName{
+  display:inline-block;
+  padding:0 6px;
+  background: linear-gradient(90deg, #ff66b4, #7cf4ff, #c99bff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color: transparent;
+  text-shadow:
+    0 0 10px rgba(255,102,180,.35),
+    0 0 18px rgba(124,244,255,.25);
+  animation: shimmer 3.2s ease-in-out infinite;
+}
+@keyframes shimmer{
+  0%,100%{ filter: brightness(1); transform: translateY(0); }
+  50%{ filter: brightness(1.2); transform: translateY(-1px); }
 }
 
 /* Buttons */
@@ -100,6 +144,7 @@ h1{
 }
 #yesBtn{ background:var(--yes); animation: heartbeat 1.4s infinite; }
 #noBtn{ background:var(--no); }
+
 .footer{ margin-top:14px; font-size:13px; opacity:.75; color: rgba(43,33,58,.75); }
 
 /* Modals */
@@ -159,7 +204,7 @@ h1{
 /* ✅ FULLY CLOSED envelope */
 .envelope{
   width: min(520px, 92vw);
-  height: clamp(190px, 28vw, 240px);
+  height: clamp(210px, 32vw, 280px);
   border-radius: 18px;
   position:relative;
   cursor:pointer;
@@ -172,44 +217,65 @@ h1{
   background: linear-gradient(180deg, #ffeaf4, #ffd9ea);
 }
 
-/* IMPORTANT: completely hidden when closed */
+/* hidden when closed */
 .envLetter{
   position:absolute;
-  left: 12px; right: 12px;
-  bottom: 12px;
-  height: 78%;
+  left: 16px; right: 16px;
+  bottom: 16px;
+  height: 82%;
   z-index: 1;
-  transform: translateY(115%);  /* <-- hides it fully */
-  opacity: 0;                  /* <-- hides text fully */
+  transform: translateY(120%);
+  opacity: 0;
   transition: transform .65s ease, opacity .25s ease;
 }
+
 .letter{
   height:100%;
   background:white;
-  border-radius:12px;
-  padding:12px;
+  border-radius:14px;
+  padding:18px;
   overflow:auto;
   border: 1px solid rgba(0,0,0,.06);
+  font-size: 16px;
+  line-height: 1.6;
 }
+.letter p{ white-space: pre-wrap; margin:0; }
 
-/* front pocket covers whole lower area */
+/* button after typing */
+.revealRow{
+  margin-top: 14px;
+  display:none;
+  justify-content:center;
+}
+.revealBtn{
+  border:none;
+  cursor:pointer;
+  font-weight:900;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #ffd1e6, #d7f6ff);
+  box-shadow: 0 14px 30px rgba(0,0,0,.14);
+  transition: transform .18s ease;
+}
+.revealBtn:hover{ transform: scale(1.04); }
+
+/* front pocket */
 .envFront{
   position:absolute; inset:0;
   z-index: 3;
   background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0));
 }
-/* Raise the pocket peak so it covers more */
 .envFront::before{
   content:"";
   position:absolute; inset:0;
   background: #ffe2ef;
-  clip-path: polygon(0 100%, 50% 48%, 100% 100%, 100% 100%, 0 100%);
+  clip-path: polygon(0 100%, 50% 50%, 100% 100%, 100% 100%, 0 100%);
 }
 .envFront::after{
   content:"";
   position:absolute; inset:0;
   background: rgba(255,255,255,.18);
-  clip-path: polygon(0 0, 50% 48%, 0 100%);
+  clip-path: polygon(0 0, 50% 50%, 0 100%);
 }
 
 /* top flap */
@@ -221,7 +287,7 @@ h1{
   background:#ffb9d6;
   transform-origin: top;
   transform: rotateX(0deg);
-  transition: transform .65s ease;
+  transition: transform .65s ease, opacity .25s ease;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
 
@@ -244,32 +310,13 @@ h1{
   transition: .25s ease;
 }
 
-/* OPEN state (FIX: flap won't block the letter) */
-.envelope.open .envFlap{
-  transform: rotateX(165deg);
-  opacity: 0;     /* hide */
-  z-index: 0;     /* send behind */
-}
+/* OPEN state */
+.envelope.open .envFlap{ transform: rotateX(165deg); opacity: 0; z-index: 0; }
+.envelope.open .envLetter{ transform: translateY(0%); opacity: 1; z-index: 6; }
+.envelope.open .waxSeal{ opacity: 0; transform: translate(-50%, -50%) scale(.85); }
 
-.envelope.open .envLetter{
-  transform: translateY(0%);
-  opacity: 1;
-  z-index: 6;     /* make sure it's above pocket/flap */
-  transition: transform .65s ease, opacity .25s ease .15s;
-}
-
-.envelope.open .waxSeal{
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(.85);
-}
-
-
-/* Confetti layer */
-.confettiLayer{
-  position:absolute; inset:0;
-  z-index: 6;
-  pointer-events:none;
-}
+/* Confetti */
+.confettiLayer{ position:absolute; inset:0; z-index: 6; pointer-events:none; }
 .confetti{
   position:absolute; top:-20px;
   border-radius: 3px;
@@ -280,6 +327,200 @@ h1{
   0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
   10%  { opacity: .95; }
   100% { transform: translateY(520px) rotate(540deg); opacity: 0; }
+}
+
+/* Password */
+.pwRow{ display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+.pwInput{
+  flex: 1; min-width: 220px;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.12);
+  outline:none;
+  font-size: 15px;
+}
+.pwGo{
+  padding: 12px 14px;
+  border-radius: 14px;
+  border:none;
+  font-weight:900;
+  cursor:pointer;
+  background: #ffd2e6;
+}
+.pwHint{ margin:10px 0 0; font-size: 13px; opacity: .75; }
+
+/* 🎵 Music button inside YES modal */
+.musicBtnInYes{
+  position:absolute;
+  left:12px;
+  top:10px;
+  z-index: 12;
+  border:none;
+  cursor:pointer;
+  font-weight:900;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.85);
+  box-shadow: 0 12px 28px rgba(0,0,0,.16);
+}
+.musicBtnInYes:hover{ transform: scale(1.03); }
+
+/* 🌷 GROWING TULIP BOUQUET POPUP */
+.bouquetOverlay{
+  position:absolute;
+  inset:0;
+  z-index: 30;
+  display:none;
+  place-items:center;
+  background: rgba(255,255,255,.70);
+  backdrop-filter: blur(8px);
+  overflow:hidden;
+}
+.bouquetOverlay.show{ display:grid; }
+
+@keyframes glowPulse{
+  0%,100%{
+    filter: drop-shadow(0 0 0 rgba(255,110,190,.0)) drop-shadow(0 0 0 rgba(120,230,255,.0));
+    transform: translateY(0) scale(1);
+  }
+  50%{
+    filter: drop-shadow(0 0 18px rgba(255,110,190,.45)) drop-shadow(0 0 26px rgba(120,230,255,.35));
+    transform: translateY(-2px) scale(1.01);
+  }
+}
+
+.bouquetCard{
+  width: min(820px, 96vw);
+  border-radius: 24px;
+  background: linear-gradient(135deg, #0a0a0a, #ffe9f4 55%, #e8fbff);
+  box-shadow: 0 24px 60px rgba(0,0,0,.25);
+  border: 1px solid rgba(0,0,0,.06);
+  padding: 18px 16px 16px;
+  position:relative;
+  overflow:hidden;
+  animation: glowPulse 2.4s ease-in-out infinite;
+
+  /* ✅ FIX: clean stacking so title is always visible */
+  isolation: isolate;
+}
+.bouquetCard::before{
+  content:"";
+  position:absolute;
+  inset:-40px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(255,120,200,.22), transparent 35%),
+    radial-gradient(circle at 85% 30%, rgba(130,240,255,.18), transparent 38%),
+    radial-gradient(circle at 35% 85%, rgba(200,160,255,.16), transparent 40%);
+  pointer-events:none;
+
+  /* ✅ FIX: force this background behind everything */
+  z-index: 0;
+}
+
+/* ✅ FIX: keep text layers above canvas + ::before */
+.bouquetClose,
+.bouquetTitle,
+.bouquetNote{
+  position:relative;
+  z-index: 10;
+}
+
+.bouquetTitle{
+  margin: 2px 0 10px;
+  font-weight: 1000;
+  color: #2b213a;
+  text-align:center;
+
+  /* ✨ Glow */
+  text-shadow:
+    0 0 10px rgba(255,110,190,.45),
+    0 0 18px rgba(120,230,255,.28),
+    0 10px 22px rgba(0,0,0,.10);
+
+  /* ✅ FIX: visible by default, still animates in */
+  opacity: 1;
+  transform: translateY(-10px) scale(.98);
+  animation: titleIn .75s ease both;
+}
+
+/* ✨ Sparkles around bouquet title */
+.bouquetTitle::before,
+.bouquetTitle::after{
+  content:"✦ ✧ ✦";
+  position:absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  letter-spacing: 10px;
+  opacity: .75;
+  pointer-events:none;
+
+  text-shadow:
+    0 0 10px rgba(255,110,190,.55),
+    0 0 18px rgba(120,230,255,.35);
+
+  animation: sparkleFloat 2.2s ease-in-out infinite;
+}
+.bouquetTitle::before{
+  left: -110px;
+  animation-delay: .15s;
+}
+.bouquetTitle::after{
+  right: -110px;
+  animation-delay: .55s;
+}
+@keyframes sparkleFloat{
+  0%,100%{ transform: translateY(-50%) translateX(0) scale(1); opacity:.55; }
+  50%{ transform: translateY(-50%) translateX(8px) scale(1.15); opacity:1; }
+}
+@keyframes titleIn{
+  0%{ opacity:0; transform: translateY(-14px) scale(.96); filter: blur(2px); }
+  100%{ opacity:1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+.bouquetClose{
+  position:absolute;
+  right:12px;
+  top:10px;
+  cursor:pointer;
+  font-weight:900;
+  font-size:18px;
+  user-select:none;
+}
+
+.growArea{
+  position:relative;
+  height: 520px;
+  border-radius: 18px;
+  overflow:hidden;
+  z-index: 1; /* ✅ canvas area under title */
+}
+
+/* tulip that grows upward */
+.growTulip{
+  position:absolute;
+  bottom:-50px;
+  font-size:32px;
+  animation: growUp 2.6s ease forwards;
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,.15));
+}
+@keyframes growUp{
+  0%{ transform: translateY(70px) scale(.55); opacity:0; }
+  35%{ opacity:1; }
+  100%{ transform: translateY(-240px) scale(1); opacity:1; }
+}
+
+/* soft glow on some tulips */
+@keyframes glowSoft{
+  0%,100%{ filter: drop-shadow(0 0 0 rgba(255,120,190,.0)); }
+  50%{ filter: drop-shadow(0 0 18px rgba(255,120,190,.45)); }
+}
+
+.bouquetNote{
+  margin: 10px 0 0;
+  text-align:center;
+  opacity:.88;
+  font-size: 14px;
 }
 
 @media (max-width:520px){
@@ -293,11 +534,12 @@ h1{
 </head>
 
 <body>
+
 <div class="flowers" id="flowers"></div>
 <canvas id="fwCanvas"></canvas>
 
 <div class="card">
-  <h1>Kirsten, Will you be my Valentine? 💘</h1>
+  <h1><span class="glowName">Kirsten</span>, Will you be my Valentine? 💘</h1>
   <div class="btnRow">
     <button class="btn" id="yesBtn">Yes 💖</button>
     <button class="btn" id="noBtn">No 🥺</button>
@@ -313,10 +555,34 @@ h1{
   </div>
 </div>
 
+<!-- PASSWORD MODAL -->
+<div class="modal" id="pwModal">
+  <div class="modalBox">
+    <span class="closeBtn" onclick="closePw()">✕</span>
+    <h3 style="margin:0 0 6px;">Oops is that you baby?🔒</h3>
+    <p style="margin:0; opacity:.75;">Confirmation for my baby only 💖</p>
+
+    <div class="pwRow">
+      <input class="pwInput" id="pwInput" type="password" placeholder="Enter code..." />
+      <button class="pwGo" id="pwGo">Unlock 💞</button>
+    </div>
+
+    <p class="pwHint" id="pwHint">Hint: Our passcodes</p>
+    <p class="pwHint" id="pwError" style="color:#d1005a; display:none; font-weight:800;">Wrong code baby 😭 try again</p>
+  </div>
+</div>
+
 <!-- YES MODAL -->
 <div class="modal" id="yesModal">
   <div class="modalBox">
     <span class="closeBtn" onclick="closeYes()">✕</span>
+
+    <!-- MUSIC only here -->
+    <audio id="bgMusic" preload="auto" loop>
+      <source src="panalangin.mp3" type="audio/mpeg">
+    </audio>
+    <button class="musicBtnInYes" id="musicBtn" type="button">🔇 Music</button>
+
     <h3 class="yesHead">You said YES 💖</h3>
     <p class="yesSub">Tap the envelope to open it 💌</p>
 
@@ -326,29 +592,29 @@ h1{
 
     <div class="confettiLayer" id="confettiLayer"></div>
 
+    <!-- Bouquet popup overlay -->
+    <div class="bouquetOverlay" id="bouquetOverlay">
+      <div class="bouquetCard">
+        <div class="bouquetClose" id="bouquetClose">✕</div>
+        <div class="bouquetTitle">Flowers for you baby 🌷🤍💖</div>
+        <div class="growArea" id="growArea"></div>
+        <p class="bouquetNote">Pink & white tulips growing just for you 🌷🤍</p>
+      </div>
+    </div>
+
     <div class="envelopeArea">
       <div class="envelope" id="envelope">
         <div class="envBack"></div>
 
         <div class="envLetter">
           <div class="letter">
-            <h4 style="margin:0 0 8px;">My simple Letter 💌</h4>
-            <p style="margin:0;">Hi my baby, my love 💖
+            <h4 style="margin:0 0 10px;">My simple Letter 💌</h4>
 
-I love you so much po. Thank you for accepting me into your life and for choosing me always.
-Thank you for your patience, your understanding, and for always making me feel special and loved. Thank you po for always giving me gifts kahit hindi po ako nag rerequest sayo
+            <p id="typedLetter"></p>
 
-With you, everything feels right and peaceful. Kahit simpleng moments lang natin, they mean the world to me.
-
-I promise to always take care of you, support you, and love you the best way that I can.
-I may not be perfect, but my love for you is real, sincere, and forever.
-
-Thank you for being my safe place, my happiness, and my greatest blessing.
-I’m so lucky to have you.
-
-Also, sorry po if hindi tayo makakapag-meet this February. Babawi po ako, baby ko.
-
-I love you always and forever, my Valentine 💘</p>
+            <div class="revealRow" id="revealRow">
+              <button class="revealBtn" id="bouquetBtn" type="button">FOR YOU BABY🎁</button>
+            </div>
           </div>
         </div>
 
@@ -361,11 +627,31 @@ I love you always and forever, my Valentine 💘</p>
 </div>
 
 <script>
+/* ====== SETTINGS YOU CAN CHANGE ====== */
+const SECRET_CODE = "323429"; // change this to your secret
+const FULL_LETTER =
+`Hi my baby, my love 💖
+
+I love you so much po. Thank you for accepting me into your life and for choosing me always.
+Thank you for your patience, your understanding, and for always making me feel special and loved. Thank you po for always giving me gifts kahit hindi po ako nag rerequest sayo.
+
+With you, everything feels right and peaceful. Kahit simpleng moments lang natin, they mean the world to me.
+
+I promise to always take care of you, support you, and love you the best way that I can.
+I may not be perfect, but my love for you is real, sincere, and forever.
+
+Thank you for being my safe place, my happiness, and my greatest blessing.
+I’m so lucky to have you.
+
+Also, sorry po if hindi tayo makakapag-meet this February. Babawi po ako, baby ko.
+
+I love you always and forever, my Valentine 💘`;
+
 /* 🌷 page background tulips */
 const flowersContainer = document.getElementById("flowers");
 const bgTulips = ["🌷","🌷","🌷","🌷","🌷","🌷","🌸","🌷","🌺","🌷"];
-for(let i=0;i<55;i++) createBgTulip();
-setInterval(createBgTulip, 180);
+for(let i=0;i<22;i++) createBgTulip();
+setInterval(createBgTulip, 520);
 
 function createBgTulip(){
   const f=document.createElement("div");
@@ -377,9 +663,10 @@ function createBgTulip(){
   f.style.animationDuration=(7+Math.random()*7)+"s";
   f.style.animationDelay=(Math.random()*1.8)+"s";
   f.style.opacity=(0.55+Math.random()*0.45).toFixed(2);
-  if(size < 28) f.style.filter = "blur(1px) drop-shadow(0 6px 10px rgba(0,0,0,.12))";
+ if(size < 28) f.style.filter = "drop-shadow(0 6px 10px rgba(0,0,0,.12))"; // ✅ no blur
+
   flowersContainer.appendChild(f);
-  setTimeout(()=>f.remove(),16000);
+  setTimeout(()=>f.remove(),11000);
 }
 
 /* NO LOGIC */
@@ -406,32 +693,577 @@ noBtn.onclick=()=>{
 };
 function closeNo(){ noModal.classList.remove("show"); }
 
-/* YES + tulip wall + confetti + fireworks */
+/* YES FLOW */
 const yesBtn=document.getElementById("yesBtn");
+const pwModal=document.getElementById("pwModal");
+const pwInput=document.getElementById("pwInput");
+const pwGo=document.getElementById("pwGo");
+const pwError=document.getElementById("pwError");
+
 const yesModal=document.getElementById("yesModal");
 const envelope=document.getElementById("envelope");
 const tulipGrid=document.getElementById("tulipGrid");
 const confettiLayer=document.getElementById("confettiLayer");
 
+const revealRow=document.getElementById("revealRow");
+const bouquetBtn=document.getElementById("bouquetBtn");
+const bouquetOverlay=document.getElementById("bouquetOverlay");
+const bouquetClose=document.getElementById("bouquetClose");
+const growArea=document.getElementById("growArea");
+
 let tulipBuilt=false;
+let typingTimer=null;
+let typedIdx=0;
 
 yesBtn.onclick=()=>{
+  pwError.style.display="none";
+  pwInput.value="";
+  pwModal.classList.add("show");
+  setTimeout(()=>pwInput.focus(), 50);
+};
+
+pwGo.onclick=tryUnlock;
+pwInput.addEventListener("keydown",(e)=>{
+  if(e.key==="Enter") tryUnlock();
+});
+
+function tryUnlock(){
+  const val = (pwInput.value || "").trim();
+  if(val !== SECRET_CODE){
+    pwError.style.display="block";
+    pwInput.focus();
+    pwInput.select();
+    return;
+  }
+  pwModal.classList.remove("show");
+  openYesModal();
+}
+
+function closePw(){ pwModal.classList.remove("show"); }
+
+function openYesModal(){
   yesModal.classList.add("show");
-  envelope.classList.remove("open"); // ensure closed every time
+  envelope.classList.remove("open");
 
   if(!tulipBuilt){
     buildTulipWallpaper();
     tulipBuilt=true;
   }
-  popConfetti();
+for(let i=0;i<25;i++) createBgTulip();
 
+  
+  popConfetti();
   document.body.classList.add("fireworksMode");
   startFireworks();
+
+  stopTyping();
+  document.getElementById("typedLetter").textContent = "";
+  typedIdx = 0;
+
+  revealRow.style.display = "none";
+  bouquetOverlay.classList.remove("show");
+  growArea.innerHTML = "";
+
+  startMusic();
+}
+
+/* close yes */
+function closeYes(){
+  yesModal.classList.remove("show");
+  bouquetOverlay.classList.remove("show");
+  growArea.innerHTML = "";
+  try{ music.pause(); }catch(e){}
+}
+
+/* typing animation when opening envelope */
+envelope.onclick=()=>{
+  const willOpen = !envelope.classList.contains("open");
+  envelope.classList.toggle("open");
+
+  if(willOpen){
+    revealRow.style.display = "none";
+    bouquetOverlay.classList.remove("show");
+    growArea.innerHTML = "";
+    startTyping(FULL_LETTER);
+  }else{
+    stopTyping();
+    document.getElementById("typedLetter").textContent = "";
+    typedIdx = 0;
+    revealRow.style.display = "none";
+    bouquetOverlay.classList.remove("show");
+    growArea.innerHTML = "";
+  }
 };
 
-function closeYes(){ yesModal.classList.remove("show"); }
+function startTyping(text){
+  stopTyping();
+  const out = document.getElementById("typedLetter");
+  out.textContent = "";
+  typedIdx = 0;
 
-envelope.onclick=()=> envelope.classList.toggle("open");
+  typingTimer = setInterval(()=>{
+    out.textContent += text.charAt(typedIdx);
+    typedIdx++;
+    out.parentElement.scrollTop = out.parentElement.scrollHeight;
+
+    if(typedIdx >= text.length){
+      stopTyping();
+      revealRow.style.display = "flex";
+    }
+  }, 36); // ✅ slower typing (increase = slower)
+}
+
+function stopTyping(){
+  if(typingTimer){
+    clearInterval(typingTimer);
+    typingTimer = null;
+  }
+}
+
+/* 🌷 Growing bouquet popup (WON'T CLOSE ENVELOPE) */
+bouquetBtn.addEventListener("click", function(e){
+  e.stopPropagation();              // stop click from touching envelope
+  bouquetOverlay.classList.add("show");
+  growTulips();
+});
+
+bouquetClose.addEventListener("click", function(e){
+  e.stopPropagation();
+  bouquetOverlay.classList.remove("show");
+  growArea.innerHTML = "";
+});
+
+bouquetOverlay.addEventListener("click", function(e){
+  if(e.target === bouquetOverlay){
+    bouquetOverlay.classList.remove("show");
+    growArea.innerHTML = "";
+  }
+  e.stopPropagation();
+});
+
+function growTulips(){
+  // clear previous
+  growArea.innerHTML = "";
+
+  // create canvas inside the popup area
+  const bouquetCanvas = document.createElement("canvas");
+  bouquetCanvas.id = "bouquetCanvas";
+  bouquetCanvas.style.position = "absolute";
+  bouquetCanvas.style.inset = "0";
+  bouquetCanvas.style.width = "100%";
+  bouquetCanvas.style.height = "100%";
+  bouquetCanvas.style.display = "block";
+
+  /* ✅ FIX: keep canvas below title/close/note */
+  bouquetCanvas.style.zIndex = "1";
+  bouquetCanvas.style.pointerEvents = "none";
+
+  growArea.style.position = "relative";
+  growArea.appendChild(bouquetCanvas);
+
+  const bctx = bouquetCanvas.getContext("2d");
+
+  const DPR = Math.max(1, Math.min(2, devicePixelRatio || 1));
+
+  function resizeBouquet(){
+    const w = growArea.clientWidth;
+    const h = growArea.clientHeight;
+    bouquetCanvas.width  = Math.floor(w * DPR);
+    bouquetCanvas.height = Math.floor(h * DPR);
+    bctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  resizeBouquet();
+
+  // helpers
+  const rand  = (a,b)=> a + Math.random()*(b-a);
+  const clamp = (v,a,b)=> Math.max(a, Math.min(b, v));
+  const lerp  = (a,b,t)=> a + (b-a)*t;
+
+  function hexToRgb(h){
+    const m = h.replace("#","").match(/.{1,2}/g).map(x=>parseInt(x,16));
+    return {r:m[0], g:m[1], b:m[2]};
+  }
+  function mix(c1, c2, t){
+    const a = hexToRgb(c1), b = hexToRgb(c2);
+    return `rgb(${Math.round(lerp(a.r,b.r,t))},${Math.round(lerp(a.g,b.g,t))},${Math.round(lerp(a.b,b.b,t))})`;
+  }
+
+  function glowCircle(x,y,r,color,alpha=1,blur=18){
+    bctx.save();
+    bctx.globalAlpha = alpha;
+    bctx.fillStyle = color;
+    bctx.shadowColor = color;
+    bctx.shadowBlur = blur;
+    bctx.beginPath();
+    bctx.arc(x,y,r,0,Math.PI*2);
+    bctx.fill();
+    bctx.restore();
+  }
+
+  function W(){ return growArea.clientWidth; }
+  function H(){ return growArea.clientHeight; }
+  function ground(){ return H() * 0.86; }
+
+  // palette (same as your 2nd file)
+  const PINK  = { petal1:"#ff8ac7",  petal2:"#ff4fa6",  centerGlow:"rgba(255,140,208,.85)" };
+  const WHITE = { petal1:"#ffffff",  petal2:"#ffd7ea",  centerGlow:"rgba(255,220,240,.85)" };
+
+  // Twinkly lights
+  class Light{
+    constructor(){ this.reset(true); }
+    reset(initial=false){
+      this.x = W()/2 + rand(-260, 260);
+      this.y = initial ? rand(H()*0.18, H()*0.92) : H() + rand(20, 160);
+      this.r = rand(0.8, 2.1);
+      this.vy = rand(0.14, 0.46);
+      this.vx = rand(-0.14, 0.14);
+      this.phase = rand(0, Math.PI*2);
+      this.hue = rand(315, 360);
+    }
+    step(t){
+      this.y -= this.vy;
+      this.x += this.vx + Math.sin(t*0.001 + this.phase)*0.20;
+      if(this.y < H()*0.10 - 160) this.reset();
+    }
+    draw(t, reveal){
+      const tw = 0.45 + 0.55*Math.sin(t*0.003 + this.phase);
+      const a = (0.12 + tw*0.55) * (0.25 + 0.75*reveal);
+      const col = `hsla(${this.hue}, 100%, 82%, ${a})`;
+      glowCircle(this.x, this.y, this.r*1.2, col, 1, 14 + 14*reveal);
+    }
+  }
+
+  class Tulip{
+    constructor(x, groundY, palette, depth=0){
+      this.x = x;
+      this.groundY = groundY;
+      this.palette = palette;
+      this.depth = depth;
+
+      this.seed = Math.random()*9999;
+
+      this.grow = 0;
+      this.growSpeed = rand(0.0032, 0.0050);
+
+      const d = (depth + 1) * 0.5;
+      this.height = lerp(rand(220, 290), rand(290, 380), 1-d);
+      this.curve  = rand(-0.18, 0.18);
+      this.stemW  = lerp(rand(6.0, 8.0), rand(8.0, 10.6), d);
+
+      this.bloomOpen = 0;
+      this.bloomDelay = rand(0.56, 0.78);
+
+      this.sway = rand(0.85, 1.5);
+    }
+
+    step(){
+      this.grow = clamp(this.grow + this.growSpeed, 0, 1);
+      const targetBloom = clamp((this.grow - this.bloomDelay) / (1 - this.bloomDelay), 0, 1);
+      this.bloomOpen = lerp(this.bloomOpen, targetBloom, 0.08);
+    }
+
+    stemTip(t){
+      const h = this.height * this.grow;
+      const sway = Math.sin(t*0.0012*this.sway + this.seed) * (9 + 17*this.grow);
+      const cx = this.x + sway + this.curve * h * 0.14;
+      const cy = this.groundY - h;
+      return {x:cx, y:cy, h};
+    }
+
+    drawLeaf(t, at, side){
+      if(this.grow < 0.22) return;
+
+      const tip = this.stemTip(t);
+      const baseX = this.x;
+      const baseY = this.groundY;
+      const y = lerp(baseY, tip.y, at);
+      const x = lerp(baseX, tip.x, at);
+
+      const g = this.grow;
+      const len  = (80 + 110*at) * (0.30 + 0.70*g);
+      const bend = side * (40 + 34*at) * (0.35 + 0.65*g);
+      const wave = Math.sin(t*0.0018 + this.seed + at*4) * 5;
+
+      bctx.save();
+      const grad = bctx.createLinearGradient(x, y, x + bend, y - len);
+      grad.addColorStop(0, "rgba(30, 235, 130, 0.84)");
+      grad.addColorStop(1, "rgba(18, 155, 90, 0.92)");
+      bctx.fillStyle = grad;
+
+      bctx.globalAlpha = (0.16 + 0.62*g) * (0.75 + 0.25*(this.depth+1));
+      bctx.beginPath();
+      bctx.moveTo(x, y);
+      bctx.quadraticCurveTo(x + bend*0.35 + wave, y - len*0.35, x + bend + wave, y - len);
+      bctx.quadraticCurveTo(x + bend*0.45, y - len*0.62, x, y);
+      bctx.closePath();
+      bctx.fill();
+
+      bctx.globalAlpha = 0.10 + 0.12*g;
+      bctx.strokeStyle = "rgba(255,255,255,0.16)";
+      bctx.lineWidth = 1;
+      bctx.stroke();
+
+      bctx.restore();
+    }
+
+    drawStem(t){
+      const tip = this.stemTip(t);
+      const baseX = this.x;
+      const baseY = this.groundY;
+
+      bctx.save();
+      bctx.lineCap="round";
+      bctx.lineJoin="round";
+
+      const grad = bctx.createLinearGradient(baseX, baseY, tip.x, tip.y);
+      grad.addColorStop(0, "rgba(25, 210, 110, 0.55)");
+      grad.addColorStop(1, "rgba(30, 245, 135, 0.95)");
+      bctx.strokeStyle = grad;
+
+      bctx.lineWidth = this.stemW;
+      bctx.globalAlpha = 0.72 + 0.18*(this.depth+1);
+
+      bctx.beginPath();
+      bctx.moveTo(baseX, baseY);
+      const midY = lerp(baseY, tip.y, 0.55);
+      const midX = lerp(baseX, tip.x, 0.55) + this.curve * tip.h * 0.08;
+      bctx.quadraticCurveTo(midX, midY, tip.x, tip.y);
+      bctx.stroke();
+
+      bctx.shadowColor = "rgba(120,255,190,0.45)";
+      bctx.shadowBlur = 14;
+      bctx.globalAlpha = 0.10 + 0.08*(this.depth+1);
+      bctx.lineWidth = this.stemW + 1.7;
+      bctx.stroke();
+
+      bctx.restore();
+
+      this.drawLeaf(t, 0.40, -1);
+      this.drawLeaf(t, 0.56, +1);
+    }
+
+    drawPetal(size, open, phase){
+      const flare = 0.30 + 0.95*open;
+      const w = size * (0.50 + 0.08*Math.sin(phase*Math.PI*2 + this.seed));
+      const h = size * (0.95 + 0.22*open);
+
+      const tint = 0.15 + 0.60*Math.abs(Math.sin(phase*Math.PI*2 + this.seed));
+      const cTop = mix(this.palette.petal1, this.palette.petal2, 0.48 + 0.32*tint);
+      const cBot = mix(this.palette.petal2, "#ffffff", 0.30);
+
+      const grad = bctx.createLinearGradient(0, h*0.35, 0, -h);
+      grad.addColorStop(0, cBot);
+      grad.addColorStop(1, cTop);
+
+      bctx.globalAlpha = (0.18 + 0.82*open) * (0.85 + 0.15*(this.depth+1));
+      bctx.fillStyle = grad;
+
+      bctx.beginPath();
+      bctx.moveTo(0, 0);
+      bctx.bezierCurveTo(
+        w*0.80, -h*0.12,
+        w*(0.95 + 0.18*flare), -h*(0.52 + 0.10*flare),
+        0, -h
+      );
+      bctx.bezierCurveTo(
+        -w*(0.95 + 0.18*flare), -h*(0.52 + 0.10*flare),
+        -w*0.80, -h*0.12,
+        0, 0
+      );
+      bctx.closePath();
+      bctx.fill();
+
+      bctx.globalAlpha = 0.10 + 0.14*open;
+      bctx.lineWidth = 1.1;
+      bctx.strokeStyle = "rgba(255,255,255,0.14)";
+      bctx.stroke();
+    }
+
+    drawFlower(t){
+      const tip = this.stemTip(t);
+      const open = this.bloomOpen;
+      if(this.grow < this.bloomDelay - 0.08) return;
+
+      const size = (22 + 30*this.grow) * (0.88 + 0.40*open) * (0.92 + 0.20*(this.depth+1));
+      const lift = 18 + 18*open;
+
+      bctx.save();
+      bctx.globalCompositeOperation = "screen";
+      const glowA = (0.05 + 0.18*open) * (0.85 + 0.15*(this.depth+1));
+      glowCircle(tip.x, tip.y - lift*0.4, size*0.75, this.palette.centerGlow, glowA, 28);
+      bctx.restore();
+
+      const petalCount = 5;
+      const cup = 9 + 22*open;
+      const wiggle = Math.sin(t*0.0011*this.sway + this.seed) * 2.0;
+
+      for(let i=0;i<petalCount;i++){
+        const phase = i/petalCount;
+        const a = phase*Math.PI*2 + wiggle*0.02;
+
+        const px = tip.x + Math.cos(a) * cup;
+        const py = tip.y + Math.sin(a) * (cup*0.34) - lift;
+
+        bctx.save();
+        bctx.translate(px, py);
+        bctx.rotate(a);
+        bctx.rotate(Math.sin(t*0.001 + this.seed + phase*3)*0.04);
+
+        this.drawPetal(size, open, phase);
+        bctx.restore();
+      }
+    }
+
+    draw(t){
+      this.drawStem(t);
+      this.drawFlower(t);
+    }
+  }
+
+  let bouquet = [];
+  let lights = [];
+  let reveal = 0;
+  let startedAt = performance.now();
+  let pop = 0;
+
+  function makeBouquet(){
+    const cx = W()/2;
+    const y = ground();
+
+    bouquet = [];
+    const count = Math.round(clamp(W()/82, 10, 18));
+
+    for(let i=0;i<count;i++){
+      const depth = rand(-1, 1);
+      const spreadX = lerp(70, 190, (depth+1)*0.5);
+      const x = cx + rand(-spreadX, spreadX);
+
+      const baseOffset = lerp(30, 0, (depth+1)*0.5);
+      const yy = y + rand(-6, 10) + baseOffset;
+
+      const palette = Math.random() < 0.62 ? PINK : WHITE;
+      bouquet.push(new Tulip(x, yy, palette, depth));
+    }
+
+    bouquet.sort((a,b)=>a.depth-b.depth);
+
+    lights = [];
+    const L = Math.round(clamp(W()/18, 40, 90));
+    for(let i=0;i<L;i++) lights.push(new Light());
+
+    reveal = 0;
+    pop = 0;
+    startedAt = performance.now();
+  }
+
+  function drawStageGlow(){
+    const y = ground();
+    bctx.save();
+    bctx.globalCompositeOperation = "screen";
+    const g = reveal;
+
+    const grad = bctx.createRadialGradient(W()/2, y+12, 30, W()/2, y+12, 360);
+    grad.addColorStop(0, `rgba(255,140,208,${0.06 + 0.08*g})`);
+    grad.addColorStop(0.45, `rgba(90,255,190,${0.04 + 0.06*g})`);
+    grad.addColorStop(1, "rgba(0,0,0,0)");
+    bctx.fillStyle = grad;
+    bctx.fillRect(0, y-250, W(), 600);
+    bctx.restore();
+  }
+
+  function drawBouquetWrap(){
+    const y = ground();
+    const cx = W()/2;
+
+    bctx.save();
+    bctx.globalAlpha = 0.14 + 0.22*reveal;
+    bctx.fillStyle = "rgba(255,255,255,0.10)";
+    bctx.strokeStyle = "rgba(255,255,255,0.14)";
+    bctx.lineWidth = 1;
+
+    bctx.beginPath();
+    bctx.moveTo(cx - 240, y + 70);
+    bctx.quadraticCurveTo(cx - 140, y - 10, cx, y + 20);
+    bctx.quadraticCurveTo(cx + 140, y - 10, cx + 240, y + 70);
+    bctx.quadraticCurveTo(cx + 80, y + 140, cx, y + 120);
+    bctx.quadraticCurveTo(cx - 80, y + 140, cx - 240, y + 70);
+    bctx.closePath();
+    bctx.fill();
+    bctx.stroke();
+
+    bctx.restore();
+  }
+
+  function drawPopSpark(){
+    if(pop <= 0) return;
+    const cx = W()/2;
+    const y = ground() - 250;
+
+    bctx.save();
+    bctx.globalCompositeOperation = "screen";
+    const k = pop;
+    for(let i=0;i<18;i++){
+      const a = (i/18) * Math.PI*2;
+      const r = (22 + 95*k);
+      const px = cx + Math.cos(a)*r;
+      const py = y + Math.sin(a)*r*0.7;
+      glowCircle(px, py, 1.0 + 2.0*k, "rgba(255,220,245,0.75)", 0.45*k, 14 + 18*k);
+    }
+    bctx.restore();
+  }
+
+  let raf = 0;
+  function frame(now){
+    // if popup closed, stop drawing
+    if(!bouquetOverlay.classList.contains("show")){
+      cancelAnimationFrame(raf);
+      return;
+    }
+
+    // keep canvas fitted to growArea
+    resizeBouquet();
+
+    bctx.clearRect(0,0,W(),H());
+
+    const elapsed = (now - startedAt) / 1000;
+    reveal = clamp(elapsed / 1.35, 0, 1);
+
+    for(const l of lights){
+      l.step(now);
+      l.draw(now, reveal);
+    }
+
+    drawStageGlow();
+
+    for(const p of bouquet){
+      const stagger = 0.10 + 0.22*(p.depth+1)*0.5;
+      const r2 = clamp((reveal - stagger) / (1 - stagger), 0, 1);
+      const targetGrow = 1 - Math.pow(1 - r2, 2.3);
+      p.grow = lerp(p.grow, targetGrow, 0.12);
+      p.step();
+      p.draw(now);
+    }
+
+    drawBouquetWrap();
+
+    if(pop === 0 && bouquet.some(b=>b.bloomOpen > 0.08)){
+      pop = 1;
+    }
+    if(pop > 0){
+      pop = Math.max(0, pop - 0.03);
+      drawPopSpark();
+    }
+
+    raf = requestAnimationFrame(frame);
+  }
+
+  makeBouquet();
+  raf = requestAnimationFrame(frame);
+
+  // restart bouquet when clicking INSIDE the bouquet area (like your original 2nd file)
+  // (canvas pointer events are disabled, so use growArea instead)
+  growArea.addEventListener("pointerdown", () => makeBouquet(), { once:false });
+}
 
 function buildTulipWallpaper(){
   tulipGrid.innerHTML="";
@@ -450,7 +1282,7 @@ function buildTulipWallpaper(){
 
 function popConfetti(){
   confettiLayer.innerHTML="";
-  const pieces=80;
+  const pieces=90;
   for(let i=0;i<pieces;i++){
     const c=document.createElement("div");
     c.className="confetti";
@@ -463,6 +1295,34 @@ function popConfetti(){
     c.style.width=w+"px"; c.style.height=h+"px";
     confettiLayer.appendChild(c);
     setTimeout(()=>c.remove(), 2600);
+  }
+}
+
+/* 🎵 Music inside YES modal */
+const music = document.getElementById("bgMusic");
+const musicBtn = document.getElementById("musicBtn");
+let musicOn = false;
+
+musicBtn.onclick = async (e)=>{
+  e.stopPropagation();
+  if(!musicOn){
+    await startMusic();
+  }else{
+    music.pause();
+    musicOn = false;
+    musicBtn.textContent = "🔇 Music";
+  }
+};
+
+async function startMusic(){
+  try{
+    await music.play();
+    musicOn = true;
+    musicBtn.textContent = "🔊 Music";
+    music.volume = 0.55;
+  }catch(err){
+    musicOn = false;
+    musicBtn.textContent = "🔇 Music";
   }
 }
 
@@ -528,5 +1388,6 @@ function startFireworks(){
   rafId=requestAnimationFrame(step);
 }
 </script>
+
 </body>
 </html>
